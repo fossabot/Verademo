@@ -86,7 +86,7 @@ jobs:
         with:
           sarif_file: veracode-results.sarif
         
-  # Create issues from piepline scan
+  # Create issues from pipeline scan
   import-issues:
     needs: pipeline-scan
     runs-on: ubuntu-latest
