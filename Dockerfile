@@ -15,9 +15,3 @@ RUN apt-get update && apt-get install -y lsb-release && \
 #   apt-get install maven
 
 COPY target/verademo.war /usr/local/tomcat/webapps/
-
-CMD ["catalina.sh", "run"]
-FROM my-base-image
-ENV DB_USER=myuser
-ENV DB_PASSWORD=mypassword
-CMD ["my_command"]
