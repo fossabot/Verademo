@@ -1,0 +1,107 @@
+# This workflow will initiate a Veracode Static Analysis Pipeline scan, return a results.json and convert to SARIF for upload as a code scanning alert
+
+name: Veracode Static Analysis Pipeline Scan + Agent SCA
+
+on:
+#  push:
+#    branches: [ master, '*' ]
+  workflow_dispatch:
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ master, '*' ]
+  schedule:
+    - cron: '17 5 * * 2'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a job to build and submit pipeline scan, you will need to customize the build process accordingly and make sure the artifact you build is used as the file input to the pipeline scan file parameter
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    steps:
+
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it, build, and upload artifact. Replace this section with your applications build steps
+    - uses: actions/checkout@v2
+
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+        
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+      
+    - uses: actions/upload-artifact@v1
+      with:
+        name: verademo.war
+        path: target/verademo.war
+
+    # download the Veracode Static Analysis Pipeline scan jar
+  Veracode_Pipeline_Scan:
+   needs: build
+   runs-on: ubuntu-latest
+   steps:
+    - uses: wei/curl@master
+      with:
+        args: -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+    - run: unzip -o pipeline-scan-LATEST.zip
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: verademo.war
+        path: /tmp
+
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - run: java -jar pipeline-scan.jar --veracode_api_id '${{secrets.VERACODE_API_ID}}' --veracode_api_key '${{secrets.VERACODE_API_KEY}}' --fail_on_severity="Very High, High" --file /tmp/verademo.war
+      continue-on-error: True
+      
+    - uses: actions/upload-artifact@v1
+      with:
+        name: ScanResults
+        path: results.json
+        
+  Veracode_Agent_Based_SCA:
+   runs-on: ubuntu-latest
+   env: 
+      SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
+   steps:
+    - name: Veracode Dependency Scanning
+    # You may pin to the exact commit or the version.
+    # uses: veracode/veracode-sca@d8ce4a08eebf1a6c5e7759c1dc53c1172a3e7e64
+      uses: veracode/veracode-sca@v1.09
+      with:
+        # Authorization token to query and create issues
+        github_token: ${{ secrets.GHACTION_TOKEN_SECRET }}
+        # Show update advisor
+        update_advisor: TRUE
+        # A git URL to work with in case the scan is not for the current repository
+        url: https://github.com/cdalomba/Verademo
+        # The maximum allowed cvss in found vulnerabilities to pass the step
+        fail-on-cvss: 5   # optional, default is 10
+        # A path within the repository where the build definition starts
+        path: .   # optional, default is .
+        # Run the SRCCLR in debug mode
+        debug: FALSE  # optional, default is false
+  
+        
+  Convert_output:
+   needs: Veracode_Pipeline_Scan
+   runs-on: ubuntu-latest
+   steps:
+    - uses: actions/download-artifact@v2
+      with:
+        name: ScanResults
+        path: /tmp
+        
+    - name: Convert pipeline scan output to SARIF format
+      id: convert
+      uses: veracode/veracode-pipeline-scan-results-to-sarif@master
+      with:
+        pipeline-results-json: /tmp/results.json
+        
+    - uses: github/codeql-action/upload-sarif@v1
+      with:
+        # Path to SARIF file relative to the root of the repository
+        sarif_file: veracode-results.sarif
