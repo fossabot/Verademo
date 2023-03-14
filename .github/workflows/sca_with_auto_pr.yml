@@ -12,7 +12,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # The workflow consist of a single job to quickly scan dependencies
-  SCA_Scan for PR:
+  veracode-sca-task:
     # The type of runner that the job will run on
     runs-on: [ self-hosted, generic ]
 
