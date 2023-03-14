@@ -14,7 +14,7 @@ jobs:
   # The workflow consist of a single job to quickly scan dependencies
   veracode-sca-task:
     # The type of runner that the job will run on
-    runs-on: [ self-hosted, generic ]
+    runs-on: [ ubuntu-latest ]
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
