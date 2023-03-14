@@ -14,11 +14,8 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   pipeline_scan:
-      # needs the build step before this job will start running
-      needs: build
       runs-on: ubuntu-latest
-      name: pipeline scan
-
+      
       steps:
         - name: checkout repo
           uses: actions/checkout@v3
