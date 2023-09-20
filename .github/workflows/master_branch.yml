@@ -51,6 +51,7 @@ jobs:
           vid: '${{ secrets.VERACODE_API_ID }}'
           vkey: '${{ secrets.VERACODE_API_KEY }}'
           scantimeout: 15
+          deleteincompletescan: 1
   
   # Import flaws into code scanning alerts
   import-flaws-code-scanning-alerts:
