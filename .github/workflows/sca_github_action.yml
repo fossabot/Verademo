@@ -26,4 +26,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           create-issues: false 
-          fail-on-cvss: 1    
+          fail-on-cvss: 1 
+          scan-collectors: maven
