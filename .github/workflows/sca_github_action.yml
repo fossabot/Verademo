@@ -4,6 +4,7 @@ name: SCA (GitHub Action) on change in dependencies definition
 on:
   # Triggers the workflow on push where package-lock.json modifies or pull request events
   push:
+    branches: [ main, master ]
     paths:
       - 'pom.xml'
   pull_request:
