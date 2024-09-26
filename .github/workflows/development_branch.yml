@@ -3,9 +3,9 @@ name: Development Branch Workflow
 
 on:
   push:
-    branches: [ development ]
+    branches: [ devx-1 ]
   pull_request:
-    branches: [ development ] 
+    branches: [ devx-1 ] 
 
 
 jobs:
