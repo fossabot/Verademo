@@ -21,7 +21,7 @@ jobs:
       - name: Check out repo 
         uses: actions/checkout@v2
 
-      # run quick scan on the project
+      # run quick scan on the project.
       - name: SCA Scan
         env: 
           SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
