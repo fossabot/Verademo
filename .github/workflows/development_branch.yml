@@ -9,7 +9,7 @@ on:
 
 
 jobs:
-  # This step will build the maven application
+  # This step will build the maven application.
   build:
     runs-on: ubuntu-latest
     steps:
