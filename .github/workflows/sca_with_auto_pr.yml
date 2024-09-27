@@ -36,7 +36,7 @@ jobs:
           git config --global user.email "${{ secrets.USER_EMAIL }}"
           git config --global user.name "${{ secrets.USER_NAME }}"
           curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan $EXTRA_ARGS > veracode-sca-results.txt
-      - name: Check for existing Vulnerabilities
+      - name: Check for Vulnerabilities
         id: check-vulnerabilities
         run: |
           cat veracode-sca-results.txt
